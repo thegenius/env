@@ -26,7 +26,7 @@ makeDockerImage() {
 
     local image_name=${1}
     local container_root_password=${2}
-    local build_temp_dir=__make_dist_server_temp__
+    local build_temp_dir=__make_git_server_temp__
 
     echo [0] check programs required ...
     command -v wget >/dev/null 2>&1 || {
@@ -54,7 +54,7 @@ makeDockerImage() {
     cat << EOF > startup.sh
 #!/bin/sh
 /usr/sbin/sshd
-git init --bare myrep.git
+git init --bare /root/git/myrep.git
 EOF
     echo [2] create startup.sh success!
 
@@ -117,8 +117,9 @@ runDockerContainer() {
     for i in $@; do
         port_map=${port_map}${prefix}${ws}${i}${ws}
     done
-    echo "docker run -dt $port_map $image_name"
-    docker run -dt $port_map $image_name
+    mkdir -p ~/git
+    echo "docker run -dt $port_map -v ~/git:/root/git  $image_name"
+    docker run -dt $port_map -v ~/git:/root/git $image_name
     return 0;
 }
 
