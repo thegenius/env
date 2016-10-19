@@ -13,10 +13,16 @@ showHelpInfo() {
 }
 
 makeDockerImage() {
-    if [ $# -lt 2 ]; then
+    if [ $# -lt 3 ]; then
+        echo ${1} ${2} ${3}
         echo "You should specify the [image name] and [root password] when make docker image!"
         exit 1
     fi
+
+    if [ "$1" != "-m" ]; then
+        exit 1
+    fi
+    shift;
 
     local image_name=${1}
     local container_root_password=${2}
@@ -182,7 +188,7 @@ do
             listDockerContainer;
             ;;
         m)
-            makeDockerImage $OPTARG;
+            makeDockerImage $@;
             clearSSHKey;
             ;;
         r)
